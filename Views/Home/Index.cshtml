@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Products.Models.Product>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Products</h1>
+    <style>
+        table, th, td {
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+    </style>
+    <div>
+        <table border="1" cellpadding="5" cellspacing="4">
+            <tr>
+                <td><b>Name</b></td>
+                <td><b>Description</b></td>
+                <td><b>ImageFile</b></td>
+                <td><b>Price</b></td>
+                <td><b>Category</b></td>
+            </tr>
+            @{
+
+                @foreach (var prod in Model)
+                {
+                    <tr border="1">
+                        <td>@prod.Name</td>
+                        <td>@prod.Description</td>
+                        <td>@prod.Category</td>
+                        <td>@prod.Price</td>
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+
+</div>
