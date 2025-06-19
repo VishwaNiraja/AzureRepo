@@ -4,42 +4,51 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
 
 trigger: none
+stages: 
+- stage: BuildApplication
+  jobs:
+    - job: Build
+      pool:
+        vmImage: 'windows-latest'
 
-pool:
-  vmImage: 'windows-latest'
+      variables:
+        solution: '**/*.sln'
+        buildPlatform: 'Any CPU'
+        buildConfiguration: 'Release'
 
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+      steps:
+      - task: NuGetToolInstaller@1
+        name: 'NuGetToolInstaller'
+        displayName: 'NuGetToolInstaller...'
+      - task: NuGetCommand@2
+        displayName: 'Nuget - restore solution files'
+        inputs:
+          restoreSolution: '$(solution)'
 
-steps:
-- task: NuGetToolInstaller@1
+      - task: VSBuild@1
+        displayName: 'Building application...'
+        inputs:
+          solution: '$(solution)'
+          msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
 
-- task: NuGetCommand@2
-  displayName: 'Nuget - restore solution files'
-  inputs:
-    restoreSolution: '$(solution)'
+      - task: VSTest@2
+        displayName: 'Test application'
+        inputs:
+          platform: '$(buildPlatform)'
+          configuration: '$(buildConfiguration)'
 
-- task: VSBuild@1
-  displayName: 'Building application...'
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
-  displayName: 'Test application'
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: AzureRmWebAppDeployment@5
-  displayName: 'Deploying application...'
-  inputs:
-      ConnectionType: 'AzureRM'
-      azureSubscription: 'Azure subscription 1(4c0ad907-15a8-43c8-8818-a28d35e340c3)'
-      appType: 'webApp'
-      WebAppName: 'vkproducts'
-      packageForLinux: '$(build.artifactStagingDirectory)/**/*.zip'
+- stage: DeployApplication
+  jobs:
+    - job: DeployApplication
+      steps: 
+       - task: AzureRmWebAppDeployment@5
+         displayName: 'Deploying application...'
+         inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: 'Azure subscription 1(4c0ad907-15a8-43c8-8818-a28d35e340c3)'
+            appType: 'webApp'
+            WebAppName: 'vkproducts'
+            packageForLinux: '$(build.artifactStagingDirectory)/**/*.zip'
