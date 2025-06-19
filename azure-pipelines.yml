@@ -5,7 +5,7 @@
 
 trigger: none
 stages: 
-- stage: BuildApplication
+- stage: 'Build_Web_App'
   jobs:
     - job: Build
       pool:
@@ -41,8 +41,8 @@ stages:
           artifact: 'CI'
           publishLocation: 'pipeline'
 
-- stage: DeployToDev
-  dependsOn: "BuildApplication"
+- stage: 'Deploy_To_Dev'
+  dependsOn: "Build_Web_App"
   jobs: 
     - job: DeployDev
       pool:
