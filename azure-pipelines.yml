@@ -50,5 +50,5 @@ stages:
             azureSubscription: 'Azure subscription 1(4c0ad907-15a8-43c8-8818-a28d35e340c3)'
             appType: 'webApp'
             WebAppName: 'vkproducts'
-            packageForLinux: '$(build.artifactStagingDirectory)/**/*.zip'
-            #packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+            #packageForLinux: '$(build.artifactStagingDirectory)/**/*.zip'
+            packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
