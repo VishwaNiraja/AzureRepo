@@ -31,11 +31,40 @@ stages:
           msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
           platform: '$(buildPlatform)'
           configuration: '$(buildConfiguration)'
-      - task: AzureRmWebAppDeployment@5
-        displayName: 'Deploying application...'
+
+        #publish pipeline artifact to Az pipeline 
+      - task: PublishPipelineArtifact@1
+        name: 'PublishPipelineArtifact'
+        displayName: 'Publish pipeline artifact'
         inputs:
-          ConnectionType: 'AzureRM'
-          azureSubscription: 'Azure subscription 1(4c0ad907-15a8-43c8-8818-a28d35e340c3)'
-          appType: 'webApp'
-          WebAppName: 'vkproducts'
-          packageForLinux: '$(build.artifactStagingDirectory)/**/*.zip'
+          targetPath: '$(Build.ArtifactStagingDirectory)'
+          artifact: 'CI'
+          publishLocation: 'pipeline'
+
+- stage: DeployToDev
+  dependsOn: "BuildApplication"
+  jobs: 
+    - job: DeployDev
+      pool:
+        vmImage: 'windows-latest'
+      
+      steps:
+        #download pipeline artifacts
+        - task: DownloadPipelineArtifact@2
+          name: 'DownloadPipeLineArtifact'
+          displayName: 'Download pipeline artifact'
+          inputs:
+            buildType: 'current'
+            artifactName: 'CI'
+            targetPath: '$(Pipeline.Workspace)'
+        
+        #deploy to azure app service
+        - task: AzureRmWebAppDeployment@5
+          displayName: 'Deploying application...'
+          inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: 'Azure subscription 1(4c0ad907-15a8-43c8-8818-a28d35e340c3)'
+            appType: 'webApp'
+            WebAppName: 'vkproducts'
+            packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+  
