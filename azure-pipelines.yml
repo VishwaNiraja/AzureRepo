@@ -3,8 +3,7 @@
 # Add steps that publish symbols, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
 
-trigger:
-- main
+trigger: none
 
 pool:
   vmImage: 'windows-latest'
@@ -18,10 +17,12 @@ steps:
 - task: NuGetToolInstaller@1
 
 - task: NuGetCommand@2
+  displayName: 'Nuget - restore solution files'
   inputs:
     restoreSolution: '$(solution)'
 
 - task: VSBuild@1
+  displayName: 'Building application...'
   inputs:
     solution: '$(solution)'
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
@@ -29,16 +30,16 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
+  displayName: 'Test application'
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
 - task: AzureRmWebAppDeployment@5
+  displayName: 'Deploying application...'
   inputs:
       ConnectionType: 'AzureRM'
       azureSubscription: 'Azure subscription 1(4c0ad907-15a8-43c8-8818-a28d35e340c3)'
       appType: 'webApp'
       WebAppName: 'vkproducts'
-      #packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
-      #packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
       packageForLinux: '$(build.artifactStagingDirectory)/**/*.zip'
