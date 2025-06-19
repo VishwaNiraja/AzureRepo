@@ -59,12 +59,12 @@ stages:
             targetPath: '$(Pipeline.Workspace)'
         
         #deploy to azure app service
-        - task: AzureRmWebAppDeployment@5
-          displayName: 'Deploying application...'
-          inputs:
-            ConnectionType: 'AzureRM'
-            azureSubscription: 'Azure subscription 1(4c0ad907-15a8-43c8-8818-a28d35e340c3)'
-            appType: 'webApp'
-            WebAppName: 'vkproducts'
-            packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
+#        - task: AzureRmWebAppDeployment@5
+#          displayName: 'Deploying application...'
+#          inputs:
+#            ConnectionType: 'AzureRM'
+#            azureSubscription: 'Azure subscription 1(4c0ad907-15a8-43c8-8818-a28d35e340c3)'
+#            appType: 'webApp'
+#            WebAppName: 'vkproducts'
+#            packageForLinux: '$(Pipeline.Workspace)/**/*.zip'
   
