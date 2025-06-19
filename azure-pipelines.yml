@@ -18,7 +18,6 @@ stages:
 
       steps:
       - task: NuGetToolInstaller@1
-        name: 'NuGetToolInstaller'
         displayName: 'NuGetToolInstaller...'
       - task: NuGetCommand@2
         displayName: 'Nuget - restore solution files'
