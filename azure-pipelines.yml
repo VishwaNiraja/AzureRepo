@@ -51,3 +51,4 @@ stages:
             appType: 'webApp'
             WebAppName: 'vkproducts'
             packageForLinux: '$(build.artifactStagingDirectory)/**/*.zip'
+            #$(Pipeline.Workspace)
